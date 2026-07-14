@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Inicio - Gestión de Mantenimiento{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <h2>Panel de Control</h2>
+    
+    <div class="estadisticas">
+        <div class="stat-card">
+            <div class="stat-number">{{ estadisticas.total_reportes or 0 }}</div>
+            <div class="stat-label">Total de Reportes</div>
+            <div class="stat-icon">📋</div>
+        </div>
+        
+        <div class="stat-card pending">
+            <div class="stat-number">{{ estadisticas.pendientes or 0 }}</div>
+            <div class="stat-label">Pendientes</div>
+            <div class="stat-icon">⏳</div>
+        </div>
+        
+        <div class="stat-card progress">
+            <div class="stat-number">{{ estadisticas.en_progreso or 0 }}</div>
+            <div class="stat-label">En Progreso</div>
+            <div class="stat-icon">🔄</div>
+        </div>
+        
+        <div class="stat-card resolved">
+            <div class="stat-number">{{ estadisticas.resueltos or 0 }}</div>
+            <div class="stat-label">Resueltos</div>
+            <div class="stat-icon">✅</div>
+        </div>
+    </div>
+
+    <div class="reportes-recientes">
+        <h3>Reportes Recientes</h3>
+        {% if reportes_recientes %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Título</th>
+                        <th>Aula</th>
+                        <th>Prioridad</th>
+                        <th>Estado</th>
+                        <th>Fecha</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for reporte in reportes_recientes %}
+                        <tr>
+                            <td>#{{ reporte.id }}</td>
+                            <td>{{ reporte.titulo }}</td>
+                            <td>{{ reporte.aula }}</td>
+                            <td>
+                                <span class="priority-badge {{ reporte.prioridad.lower() }}">
+                                    {{ reporte.prioridad }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="status-badge {{ reporte.estado.lower().replace(' ', '-') }}">
+                                    {{ reporte.estado }}
+                                </span>
+                            </td>
+                            <td>{{ reporte.fecha_reporte.strftime('%d/%m/%Y %H:%M') if reporte.fecha_reporte else 'N/A' }}</td>
+                            <td>
+                                <a href="{{ url_for('ver_reporte', id=reporte.id) }}" class="btn-small">Ver</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="no-data">No hay reportes registrados aún.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

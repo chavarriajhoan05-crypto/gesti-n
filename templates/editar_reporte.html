@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Reporte #{{ reporte.id }} - Gestión de Mantenimiento{% endblock %}
+
+{% block content %}
+<div class="form-page">
+    <h2>Editar Reporte #{{ reporte.id }}</h2>
+    
+    <form method="POST" class="form-reporte">
+        <div class="form-section">
+            <h3>Información del Reporte</h3>
+            
+            <div class="form-group">
+                <label for="titulo">Título del Daño *</label>
+                <input type="text" id="titulo" name="titulo" class="form-control" required maxlength="200" value="{{ reporte.titulo }}">
+            </div>
+
+            <div class="form-group">
+                <label for="descripcion">Descripción Detallada *</label>
+                <textarea id="descripcion" name="descripcion" class="form-control" required rows="5">{{ reporte.descripcion }}</textarea>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="aula_id">Aula / Espacio *</label>
+                    <select id="aula_id" name="aula_id" class="form-control" required>
+                        {% for aula in aulas %}
+                            <option value="{{ aula.id }}" {% if aula.id == reporte.aula_id %}selected{% endif %}>{{ aula.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="categoria_id">Categoría *</label>
+                    <select id="categoria_id" name="categoria_id" class="form-control" required>
+                        {% for cat in categorias %}
+                            <option value="{{ cat.id }}" {% if cat.id == reporte.categoria_id %}selected{% endif %}>{{ cat.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3>Estado y Gestión</h3>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="estado_id">Estado *</label>
+                    <select id="estado_id" name="estado_id" class="form-control" required>
+                        {% for estado in estados %}
+                            <option value="{{ estado.id }}" {% if estado.id == reporte.estado_id %}selected{% endif %}>{{ estado.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="prioridad">Prioridad *</label>
+                    <select id="prioridad" name="prioridad" class="form-control" required>
+                        <option value="Baja" {% if reporte.prioridad == 'Baja' %}selected{% endif %}>Baja</option>
+                        <option value="Media" {% if reporte.prioridad == 'Media' %}selected{% endif %}>Media</option>
+                        <option value="Alta" {% if reporte.prioridad == 'Alta' %}selected{% endif %}>Alta</option>
+                        <option value="Urgente" {% if reporte.prioridad == 'Urgente' %}selected{% endif %}>Urgente</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="responsable">Responsable *</label>
+                <input type="text" id="responsable" name="responsable" class="form-control" required value="{{ reporte.responsable or '' }}">
+            </div>
+
+            <div class="form-group">
+                <label for="costo_estimado">Costo Estimado (opcional)</label>
+                <input type="number" id="costo_estimado" name="costo_estimado" class="form-control" step="0.01" min="0" value="{{ reporte.costo_estimado or '' }}">
+            </div>
+
+            <div class="form-group">
+                <label for="observaciones">Observaciones</label>
+                <textarea id="observaciones" name="observaciones" class="form-control" rows="4">{{ reporte.observaciones or '' }}</textarea>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+            <a href="{{ url_for('ver_reporte', id=reporte.id) }}" class="btn btn-secondary">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

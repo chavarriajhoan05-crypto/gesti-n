@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block title %}Ver Reporte #{{ reporte.id }} - Gestión de Mantenimiento{% endblock %}
+
+{% block content %}
+<div class="reporte-detalle">
+    <div class="reporte-header">
+        <h2>Reporte #{{ reporte.id }}: {{ reporte.titulo }}</h2>
+        <div class="reporte-acciones">
+            <a href="{{ url_for('editar_reporte', id=reporte.id) }}" class="btn btn-edit">Editar</a>
+            <form method="POST" action="{{ url_for('eliminar_reporte', id=reporte.id) }}" style="display: inline;">
+                <button type="submit" class="btn btn-danger" onclick="return confirm('¿Estás seguro de que quieres eliminar este reporte?')">Eliminar</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="reporte-content">
+        <div class="reporte-info">
+            <div class="info-section">
+                <h3>Información del Reporte</h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <strong>Estado:</strong>
+                        <span class="status-badge {{ reporte.estado.lower().replace(' ', '-') }}">
+                            {{ reporte.estado }}
+                        </span>
+                    </div>
+                    <div class="info-item">
+                        <strong>Prioridad:</strong>
+                        <span class="priority-badge {{ reporte.prioridad.lower() }}">
+                            {{ reporte.prioridad }}
+                        </span>
+                    </div>
+                    <div class="info-item">
+                        <strong>Aula / Espacio:</strong>
+                        {{ reporte.aula }}
+                    </div>
+                    <div class="info-item">
+                        <strong>Categoría:</strong>
+                        {{ reporte.categoria }}
+                    </div>
+                    <div class="info-item">
+                        <strong>Responsable:</strong>
+                        {{ reporte.responsable or 'Sin asignar' }}
+                    </div>
+                    <div class="info-item">
+                        <strong>Costo Estimado:</strong>
+                        {% if reporte.costo_estimado %}
+                            ${{ "%.2f"|format(reporte.costo_estimado) }}
+                        {% else %}
+                            No especificado
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-section">
+                <h3>Descripción</h3>
+                <p class="descripcion">{{ reporte.descripcion }}</p>
+            </div>
+
+            <div class="info-section">
+                <h3>Fechas</h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <strong>Fecha de Reporte:</strong>
+                        {{ reporte.fecha_reporte.strftime('%d/%m/%Y %H:%M') if reporte.fecha_reporte else 'N/A' }}
+                    </div>
+                    <div class="info-item">
+                        <strong>Última Actualización:</strong>
+                        {{ reporte.fecha_actualizacion.strftime('%d/%m/%Y %H:%M') if reporte.fecha_actualizacion else 'N/A' }}
+                    </div>
+                    {% if reporte.fecha_resolucion %}
+                        <div class="info-item">
+                            <strong>Fecha de Resolución:</strong>
+                            {{ reporte.fecha_resolucion.strftime('%d/%m/%Y %H:%M') }}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if reporte.observaciones %}
+                <div class="info-section">
+                    <h3>Observaciones</h3>
+                    <p>{{ reporte.observaciones }}</p>
+                </div>
+            {% endif %}
+
+            <div class="info-section">
+                <h3>Avanzar Estado</h3>
+                <form method="POST" action="{{ url_for('cambiar_estado', id=reporte.id) }}" class="status-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="estado_id">Nuevo Estado</label>
+                            <select id="estado_id" name="estado_id" class="form-control" required>
+                                <option value="">Selecciona un estado</option>
+                                {% for estado in estados %}
+                                    <option value="{{ estado.id }}" {% if estado.id == reporte.estado_id %}selected{% endif %}>{{ estado.nombre }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="responsable">Responsable</label>
+                            <input type="text" id="responsable" name="responsable" class="form-control" placeholder="Nombre del responsable" value="{{ reporte.responsable or '' }}">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="observaciones">Observaciones de Avance</label>
+                        <textarea id="observaciones" name="observaciones" class="form-control" rows="3" placeholder="Describe el avance o la solución..."></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Actualizar Estado</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="reporte-seguimiento">
+            <h3>Seguimiento del Reporte</h3>
+            {% if seguimiento %}
+                <div class="timeline">
+                    {% for evento in seguimiento %}
+                        <div class="timeline-item">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-content">
+                                <div class="timeline-header">
+                                    <strong>{{ evento.fecha_cambio.strftime('%d/%m/%Y %H:%M') }}</strong>
+                                    <span class="timeline-author">{{ evento.responsable_cambio or 'Sistema' }}</span>
+                                </div>
+                                <div class="timeline-body">
+                                    {% if evento.estado_anterior and evento.estado_nuevo %}
+                                        <p>
+                                            Estado: 
+                                            <span class="status-badge {{ evento.estado_anterior.lower().replace(' ', '-') }}">{{ evento.estado_anterior }}</span>
+                                            →
+                                            <span class="status-badge {{ evento.estado_nuevo.lower().replace(' ', '-') }}">{{ evento.estado_nuevo }}</span>
+                                        </p>
+                                    {% endif %}
+                                    {% if evento.descripcion_cambio %}
+                                        <p>{{ evento.descripcion_cambio }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="no-data">No hay registros de seguimiento aún.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

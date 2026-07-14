@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}Estadísticas - Gestión de Mantenimiento{% endblock %}
+
+{% block content %}
+<div class="estadisticas-page">
+    <h2>Estadísticas y Análisis</h2>
+    
+    <div class="estadisticas-grid">
+        <div class="chart-container">
+            <h3>Reportes por Estado</h3>
+            <table class="mini-table">
+                <tr>
+                    <th>Estado</th>
+                    <th>Cantidad</th>
+                </tr>
+                {% for item in reportes_por_estado %}
+                    <tr>
+                        <td>{{ item.nombre }}</td>
+                        <td class="cantidad">{{ item.cantidad }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+
+        <div class="chart-container">
+            <h3>Reportes por Prioridad</h3>
+            <table class="mini-table">
+                <tr>
+                    <th>Prioridad</th>
+                    <th>Cantidad</th>
+                </tr>
+                {% for item in reportes_por_prioridad %}
+                    <tr>
+                        <td>
+                            <span class="priority-badge {{ item.prioridad.lower() }}">
+                                {{ item.prioridad }}
+                            </span>
+                        </td>
+                        <td class="cantidad">{{ item.cantidad }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+
+    <div class="estadisticas-grid">
+        <div class="chart-container">
+            <h3>Reportes por Aula (Top 10)</h3>
+            <table class="mini-table">
+                <tr>
+                    <th>Aula</th>
+                    <th>Cantidad</th>
+                </tr>
+                {% for item in reportes_por_departamento[:10] %}
+                    <tr>
+                        <td>{{ item.nombre }}</td>
+                        <td class="cantidad">{{ item.cantidad }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+
+        <div class="chart-container">
+            <h3>Reportes por Categoría (Top 10)</h3>
+            <table class="mini-table">
+                <tr>
+                    <th>Categoría</th>
+                    <th>Cantidad</th>
+                </tr>
+                {% for item in reportes_por_categoria[:10] %}
+                    <tr>
+                        <td>{{ item.nombre }}</td>
+                        <td class="cantidad">{{ item.cantidad }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+
+    <div class="resumen-costos">
+        <h3>Resumen de Costos</h3>
+        <div class="costos-info">
+            <div class="costo-item">
+                <span class="costo-label">Costo Total Estimado:</span>
+                <span class="costo-valor">
+                    {% if costos.costo_total %}
+                        ${{ "%.2f"|format(costos.costo_total) }}
+                    {% else %}
+                        $0.00
+                    {% endif %}
+                </span>
+            </div>
+            <div class="costo-item">
+                <span class="costo-label">Costo Promedio:</span>
+                <span class="costo-valor">
+                    {% if costos.costo_promedio %}
+                        ${{ "%.2f"|format(costos.costo_promedio) }}
+                    {% else %}
+                        $0.00
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}Reportes - Gestión de Mantenimiento{% endblock %}
+
+{% block content %}
+<div class="reportes-page">
+    <h2>Gestión de Reportes</h2>
+    
+    <div class="filtros">
+        <form method="get" class="filter-form">
+            <div class="filter-group">
+                <select name="estado" class="filter-select">
+                    <option value="">Todos los Estados</option>
+                    {% for estado in estados %}
+                        <option value="{{ estado.id }}" {% if request.args.get('estado') == estado.id|string %}selected{% endif %}>
+                            {{ estado.nombre }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <select name="aula" class="filter-select">
+                    <option value="">Todas las Aulas</option>
+                    {% for aula in aulas %}
+                        <option value="{{ aula.id }}" {% if request.args.get('aula') == aula.id|string %}selected{% endif %}>
+                            {{ aula.nombre }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <select name="prioridad" class="filter-select">
+                    <option value="">Todas las Prioridades</option>
+                    <option value="Baja" {% if request.args.get('prioridad') == 'Baja' %}selected{% endif %}>Baja</option>
+                    <option value="Media" {% if request.args.get('prioridad') == 'Media' %}selected{% endif %}>Media</option>
+                    <option value="Alta" {% if request.args.get('prioridad') == 'Alta' %}selected{% endif %}>Alta</option>
+                    <option value="Urgente" {% if request.args.get('prioridad') == 'Urgente' %}selected{% endif %}>Urgente</option>
+                </select>
+            </div>
+            
+            <button type="submit" class="btn">Filtrar</button>
+            <a href="{{ url_for('listar_reportes') }}" class="btn-link">Limpiar Filtros</a>
+        </form>
+    </div>
+
+    <div class="reportes-tabla">
+        {% if reportes %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Título</th>
+                        <th>Aula</th>
+                        <th>Categoría</th>
+                        <th>Prioridad</th>
+                        <th>Estado</th>
+                        <th>Responsable</th>
+                        <th>Fecha</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for reporte in reportes %}
+                        <tr>
+                            <td>#{{ reporte.id }}</td>
+                            <td>{{ reporte.titulo }}</td>
+                            <td>{{ reporte.aula }}</td>
+                            <td>{{ reporte.categoria }}</td>
+                            <td>
+                                <span class="priority-badge {{ reporte.prioridad.lower() }}">
+                                    {{ reporte.prioridad }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="status-badge {{ reporte.estado.lower().replace(' ', '-') }}">
+                                    {{ reporte.estado }}
+                                </span>
+                            </td>
+                            <td>{{ reporte.responsable or 'Sin asignar' }}</td>
+                            <td>{{ reporte.fecha_reporte.strftime('%d/%m/%Y') if reporte.fecha_reporte else 'N/A' }}</td>
+                            <td class="acciones">
+                                <a href="{{ url_for('ver_reporte', id=reporte.id) }}" class="btn-small">Ver</a>
+                                <a href="{{ url_for('editar_reporte', id=reporte.id) }}" class="btn-small btn-edit">Editar</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="no-data">No hay reportes que coincidan con los filtros aplicados.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

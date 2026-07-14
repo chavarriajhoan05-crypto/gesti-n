@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Error - Gestión de Mantenimiento{% endblock %}
+
+{% block content %}
+<div class="error-page">
+    <h2>Error de Conexión</h2>
+    <p>{{ mensaje }}</p>
+    <div class="error-actions">
+        <a href="{{ url_for('index') }}" class="btn btn-primary">Volver al Inicio</a>
+        <a href="{{ url_for('crear_reporte') }}" class="btn btn-secondary">Intentar de nuevo</a>
+    </div>
+</div>
+{% endblock %}
