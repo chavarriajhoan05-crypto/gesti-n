@@ -1,3 +1,4 @@
+import os
 from flask import Flask, render_template, request, jsonify, redirect, url_for
 import mysql.connector
 from mysql.connector import Error
@@ -74,16 +75,29 @@ def decrypt_text(value):
         print(f"Error al desencriptar: {e}")
         return value
 
-
+#def get_db_connection():
+    #"""Obtiene una conexión a la base de datos"""
+    #try:
+        #connection = mysql.connector.connect(**db_config)
+        #if connection.is_connected():
+            #return connection
+   # except Exception as e:
+        #print(f"Error al conectar a MySQL: {e}")
+        #return None
 def get_db_connection():
-    """Obtiene una conexión a la base de datos"""
     try:
-        connection = mysql.connector.connect(**db_config)
-        if connection.is_connected():
-            return connection
-    except Exception as e:
-        print(f"Error al conectar a MySQL: {e}")
-        return None
+        connection = mysql.connector.connect(
+            # Si están en la nube usa la variable de entorno, si no, usa el valor local
+            host=os.environ.get('DB_HOST', 'localhost'),       # Cambiar 'localhost' si su servidor local es diferente
+            port=int(os.environ.get('DB_PORT', 3306)),         # Cambiar 3306 si usan otro puerto local
+            user=os.environ.get('DB_USER', 'root'),             # Tu usuario local de MySQL (ej. root)
+            password=os.environ.get('DB_PASSWORD', ''),        # Tu contraseña local de MySQL (dejar '' si no tiene)
+            database=os.environ.get('DB_NAME', 'gestion_mantenimiento')         # Nombre de tu base de datos local
+        )
+        return connection
+    except mysql.connector.Error as e:
+        print(f"X Error de conexión a BD: {e}")
+        raise
 
 # ======================== RUTAS PRINCIPALES ========================
 
