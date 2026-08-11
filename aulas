@@ -1,8 +1,0 @@
-USE defaultdb;
-
-CREATE TABLE aulas (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    nombre VARCHAR(100) NOT NULL,
-    ubicacion VARCHAR(150),
-    capacidad INT
-);
